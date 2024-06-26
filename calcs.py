@@ -3,14 +3,24 @@
 def chances_max_wins_losses(max_wins: int, max_losses: int, wr: float):
     chances = [ [ 0 for _ in range(max_losses + 1) ] for _ in range(max_wins + 1) ]
 
-    return calc_chances(chances, max_wins + max_losses - 1, wr, lambda wins, losses: wins < max_wins and losses < max_losses)
+     
+    old = calc_chances(chances, max_wins + max_losses - 1, wr, lambda wins, losses: wins < max_wins and losses < max_losses)
+    new = calc_chances_new(chances, max_wins + max_losses - 1, wr, lambda wins, losses: wins < max_wins and losses < max_losses)
+    print("old", old)
+    print("new", new)
+    return new
 
 
 def chances_max_matches(max_matches: int, wr: float):
     chances = [ [ 0 for _ in range(max_matches + 1) ] for _ in range(max_matches + 1) ]
 
-    return calc_chances(chances, max_matches, wr, lambda wins, losses: wins + losses < max_matches)
+    old = calc_chances(chances, max_matches, wr, lambda wins, losses: wins + losses < max_matches)
+    new = calc_chances_new(chances, max_matches, wr, lambda wins, losses: wins + losses < max_matches)
+    print("old", old)
+    print("new", new)
+    return new
 
+# Returns chances matrix
 def calc_chances(chances: list[list[float]], max_matches: int, wr: float, edge_conditional):
     chances[0][0] = 1
 
@@ -25,6 +35,21 @@ def calc_chances(chances: list[list[float]], max_matches: int, wr: float, edge_c
     sanity_check(chances, edge_conditional)
     return chances
 
+
+# Returns chances matrix
+def calc_chances_new(chances: list[list[float]], max_matches: int, wr: float, edge_conditional):
+    chances[0][0] = 1
+
+    for diagonal in range (len(chances) + len(chances[0]) - 1):
+        for wins in range(diagonal):
+            losses = diagonal - wins
+            if edge_conditional(wins, losses):
+                curr_chance = chances[wins][losses]
+                chances[wins + 1][losses] += curr_chance * wr
+                chances[wins][losses + 1] += curr_chance * (1 - wr)
+    
+    sanity_check(chances, edge_conditional)
+    return chances
 
 # two parameters should have same dimensions
 def ev(chances: list[list[float]], payout: list[list[float]], edge_conditional):
@@ -73,6 +98,7 @@ def sanity_check(chances: list[list[float]], edge_conditional):
         for j, f in enumerate(e):
             if not edge_conditional(i, j):
                 edge += f
+    print(chances, edge)
     assert abs(edge - 1) < 0.000001
 
 

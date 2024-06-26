@@ -19,7 +19,8 @@ def premier_draft():
     chances = calcs.chances_max_wins_losses(max_wins, max_losses, wr)
     premier_ev = calcs.ev(chances, payout, edge_conditional)
     wins, losses = calcs.average_wins_losses(chances, edge_conditional)
-    print(premier_ev, wins, losses)
+    # print(premier_ev, wins, losses)
+    print(chances)
 
 def traditional_draft():
     wins_payout = [100, 250, 1000, 2500]
@@ -30,14 +31,15 @@ def traditional_draft():
     chances = calcs.chances_max_matches(max_games, wr)
     traditional_ev = calcs.ev(chances, payout, lambda i, j: i + j == max_games)
     wins, losses = calcs.average_wins_losses(chances, lambda i, j: i + j == max_games)
-    print(traditional_ev, wins, losses)
+    # print(traditional_ev, wins, losses)
+    print(chances)
 
     def ev_func(wr):
         chances = calcs.chances_max_matches(max_games, wr)
         premier_ev = calcs.ev(chances, payout, lambda i, j: i + j == max_games)
         return premier_ev - 1500
     app_wr = calcs.approximate_even_ev(ev_func, 0.01)
-    print(app_wr)
+    # print(app_wr)
 
 def test():
     wins_payout = [50, 100, 250, 1000, 1400, 1600, 1800, 2200]
